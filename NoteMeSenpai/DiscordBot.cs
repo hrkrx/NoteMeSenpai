@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using DSharpPlus;
+using NoteMeSenpai.Models;
+using NoteMeSenpai.Database;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using System.Collections.Generic;
@@ -12,6 +14,9 @@ namespace NoteMeSenpai
     {
         private static DiscordClient _discord;
         private static CommandsNextExtension _commands;
+        private static DatabaseConnection _databaseConnection;
+
+        private static Options _options;
 
         /// <summary>
         /// Inits all commands and events the bot has to and starts the bot loop 
@@ -32,6 +37,18 @@ namespace NoteMeSenpai
         /// <param name="prefixes">All prefixes the bot should react to</param>
         private static void Init(string apiSecret, List<string> prefixes)
         {
+            // Reading the Options
+            _options = Options.LoadFromFile();
+
+            if (string.IsNullOrWhiteSpace(_options.DatabaseConnectionString))
+            {
+                _options.DatabaseConnectionString = "mongodb://localhost:27017";
+            }
+
+            // Setup the database connection
+            _databaseConnection = new DatabaseConnection(_options.DatabaseConnectionString);
+
+            // Setup the Discord client
             _discord = new DiscordClient(new DiscordConfiguration
             {
                 Token = apiSecret,
@@ -52,6 +69,7 @@ namespace NoteMeSenpai
             };
 
             // Add all commands
+            _commands.RegisterCommands<Commands.Notes>();
             _commands.RegisterCommands<Commands.Administration>();
             
         }
