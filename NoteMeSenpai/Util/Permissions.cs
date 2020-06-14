@@ -9,7 +9,8 @@ using NoteMeSenpai.Database;
 
 namespace NoteMeSenpai.Util
 {
-    public static class Permissions {
+    public static class Permissions
+    {
 
         private static DatabaseConnection _databaseConnection;
 
@@ -26,10 +27,18 @@ namespace NoteMeSenpai.Util
                 return false;
             }
 
+            if (context.Guild.Owner.Id.Equals(context.Member.Id))
+            {
+                return true;
+            }
+
             Expression<Func<Permission, bool>> filter = (permission) => permission.Guild.Equals(context.Guild.ToString());
             var permissions = _databaseConnection.GetAll<Permission>(filter);
+            var notYetRegulated = permissions.Where(x => x.Command.Equals(context.Command.Name) || x.Command.Equals("*")).Count() == 0;
+            var specificallyAllowed = permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName)  && context.Command.Name.Equals(x.Command));
+            var admin = permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName)  && context.Command.Name.Equals(x.Command)&& (context.Command.Name.Equals(x.Command) || x.Command.Equals("*")));
 
-            if (permissions.Count() == 0 || permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName) && context.Command.Name.Equals(x.Command)) != null)
+            if (notYetRegulated || specificallyAllowed != null || admin != null)
             {
                 return true;
             }

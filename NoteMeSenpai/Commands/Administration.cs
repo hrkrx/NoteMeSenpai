@@ -31,9 +31,9 @@ namespace NoteMeSenpai.Commands
             var mention = ctx.Member.Mention;
             if (Permissions.CheckCommandPermission(ctx))
             {
-                if(DiscordBot.AddRole(role, command, ctx.Guild))
+                if (DiscordBot.AddRole(role, command, ctx.Guild))
                 {
-                    await ctx.RespondAsync(mention + ", role added for *" + command + "*");
+                    await ctx.RespondAsync(mention + ", role **" + role + "** added for *" + command + "*");
                 }
                 else
                 {
@@ -49,13 +49,20 @@ namespace NoteMeSenpai.Commands
         [Command("addrole")]
         public async Task AddRole(CommandContext ctx, string role)
         {
+            var mention = ctx.Member.Mention;
             if (Permissions.CheckCommandPermission(ctx))
             {
-                await ctx.RespondAsync("Not yet implemented");
+                if (DiscordBot.AddRole(role, "*", ctx.Guild))
+                {
+                    await ctx.RespondAsync(mention + ", role **" + role + "** added for *all commands*");
+                }
+                else
+                {
+                    await ctx.RespondAsync(mention + ", that didn't work.");
+                }
             }
             else
             {
-                var mention = ctx.Member.Mention;
                 await ctx.RespondAsync(mention + ", you do not have permission to do that.");
             }
         }
@@ -63,13 +70,20 @@ namespace NoteMeSenpai.Commands
         [Command("removerole")]
         public async Task RemoveRole(CommandContext ctx, string role, string command)
         {
+            var mention = ctx.Member.Mention;
             if (Permissions.CheckCommandPermission(ctx))
             {
-                await ctx.RespondAsync("Not yet implemented");
+                if (DiscordBot.RemoveRole(role, command, ctx.Guild))
+                {
+                    await ctx.RespondAsync(mention + ", role **" + role + "** removed for *" + command + "*");
+                }
+                else
+                {
+                    await ctx.RespondAsync(mention + ", that didn't work.");
+                }
             }
             else
             {
-                var mention = ctx.Member.Mention;
                 await ctx.RespondAsync(mention + ", you do not have permission to do that.");
             }
         }
@@ -77,13 +91,20 @@ namespace NoteMeSenpai.Commands
         [Command("removerole")]
         public async Task RemoveRole(CommandContext ctx, string role)
         {
+            var mention = ctx.Member.Mention;
             if (Permissions.CheckCommandPermission(ctx))
             {
-                await ctx.RespondAsync("Not yet implemented");
+                if (DiscordBot.RemoveRole(role, "*", ctx.Guild))
+                {
+                    await ctx.RespondAsync(mention + ", role **" + role + "** removed for *all commands*");
+                }
+                else
+                {
+                    await ctx.RespondAsync(mention + ", that didn't work.");
+                }
             }
             else
             {
-                var mention = ctx.Member.Mention;
                 await ctx.RespondAsync(mention + ", you do not have permission to do that.");
             }
         }

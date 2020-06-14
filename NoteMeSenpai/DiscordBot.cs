@@ -34,7 +34,7 @@ namespace NoteMeSenpai
         }
 
         /// <summary>
-        /// Adds a role that is allowed to execute commands
+        /// Adds a role that is allowed to execute commands. "*" for wildcard
         /// </summary>
         /// <param name="role">Name of the role</param>
         /// <param name="command">Name of the command</param>
@@ -105,10 +105,40 @@ namespace NoteMeSenpai
         }
 
         /// <summary>
+        /// Removes a role from a command. "*" for wildcard
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="command"></param>
+        public static bool RemoveRole(string role, string command, DiscordGuild guild)
+        {
+            if (!guild.Roles.Values.Select(x => x.Name).Contains(role))
+            {
+                return false;
+            }
+
+            Expression<Func<Permission, bool>> filter = (permission) => permission.Guild.Equals(guild.ToString()) && permission.Command.Equals(command) && permission.RoleName.Equals(role);
+            var permissions = _databaseConnection.GetAll(filter);
+
+            foreach (var permission in permissions)
+            {
+                _databaseConnection.Delete(permission);
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Returns the discord client aka the bot
         /// </summary>
         /// <returns>DiscordClient</returns>
         public static DiscordClient GetDiscordClient() => _discord;
+
+        public static async void RespondAsync(CommandContext context, string message)
+        {
+            var mention = context.Member.Mention;
+            var channels = context.Guild.Channels;
+            
+        }
 
         
     }

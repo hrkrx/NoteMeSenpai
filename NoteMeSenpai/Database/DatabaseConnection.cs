@@ -49,5 +49,12 @@ namespace NoteMeSenpai.Database
                 return result;
             }
         }
+
+        public void Delete<T> (T obj) where T : IDatabaseObject
+        {
+            var collection = database.GetCollection<T>(typeof(T).FullName);
+            var filter = Builders<T>.Filter.Eq("_id", obj._id); 
+            var result = collection.DeleteOne(filter);
+        }
     }   
 }
