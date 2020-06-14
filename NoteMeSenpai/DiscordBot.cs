@@ -1,12 +1,15 @@
 using System;
 using System.IO;
 using DSharpPlus;
+using System.Linq;
+using System.Linq.Expressions;
 using NoteMeSenpai.Models;
 using NoteMeSenpai.Database;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using System.Collections.Generic;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 
 namespace NoteMeSenpai
 {
@@ -31,6 +34,32 @@ namespace NoteMeSenpai
         }
 
         /// <summary>
+        /// Adds a role that is allowed to execute commands
+        /// </summary>
+        /// <param name="role">Name of the role</param>
+        /// <param name="command">Name of the command</param>
+        /// <param name="guild">Guild object ToString()</param>
+        public static bool AddRole(string role, string command, DiscordGuild guild)
+        {
+            if (!guild.Roles.Values.Select(x => x.Name).Contains(role))
+            {
+                return false;
+            }
+            Expression<Func<Permission, bool>> filter = (permission) => permission.Guild.Equals(guild.ToString()) && permission.Command.Equals(command) && permission.RoleName.Equals(role);
+            var permissions = _databaseConnection.Get(filter);
+            if(permissions == null)
+            {
+                permissions = new Permission();
+                permissions.RoleName = role;
+                permissions.Guild = guild.ToString();
+                permissions.Command = command;
+                _databaseConnection.Save(permissions);
+            }
+            return true;
+
+        }
+
+        /// <summary>
         /// Inits all commands and events the bot has to 
         /// </summary>
         /// <param name="apiSecret">The discord bot API secret</param>
@@ -47,6 +76,7 @@ namespace NoteMeSenpai
 
             // Setup the database connection
             _databaseConnection = new DatabaseConnection(_options.DatabaseConnectionString);
+            Util.Permissions.Init(_databaseConnection);
 
             // Setup the Discord client
             _discord = new DiscordClient(new DiscordConfiguration

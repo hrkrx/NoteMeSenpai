@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using NoteMeSenpai.Models;
 using MongoDB.Bson;
 using System.Linq.Expressions;
+using System.Linq;
 using System.Collections.Generic;
 using MongoDB;
 using System;
@@ -24,6 +25,7 @@ namespace NoteMeSenpai.Database
         public void Save<T>(T obj)
         {
             var collection = database.GetCollection<T>(typeof(T).FullName);
+            collection.InsertOne(obj);  
         }
 
         public T Get<T>(Expression<Func<T, bool>> filter)

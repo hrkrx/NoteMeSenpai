@@ -28,13 +28,20 @@ namespace NoteMeSenpai.Commands
         [Command("addrole")]
         public async Task AddRole(CommandContext ctx, string role, string command)
         {
+            var mention = ctx.Member.Mention;
             if (Permissions.CheckCommandPermission(ctx))
             {
-                await ctx.RespondAsync("Not yet implemented");
+                if(DiscordBot.AddRole(role, command, ctx.Guild))
+                {
+                    await ctx.RespondAsync(mention + ", role added for *" + command + "*");
+                }
+                else
+                {
+                    await ctx.RespondAsync(mention + ", that didn't work.");
+                }
             }
             else
             {
-                var mention = ctx.Member.Mention;
                 await ctx.RespondAsync(mention + ", you do not have permission to do that.");
             }
         }

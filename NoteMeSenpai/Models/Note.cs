@@ -1,8 +1,10 @@
 using System;
+using MongoDB.Bson;
 
 namespace NoteMeSenpai.Models
 {
     public class Note {
+        public ObjectId _id { get; set; }
         public DateTime CreationDate { get; private set; }
         public string CreatorID { get; private set; }
         public string TargetID { get; private set; }
