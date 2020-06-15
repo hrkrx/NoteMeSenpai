@@ -11,6 +11,8 @@ namespace NoteMeSenpai.Commands
 {
     public class Notes : BaseCommandModule
     {        
+        private static Dictionary<string, Dictionary<ulong, int>> _pagingCache = new Dictionary<string, Dictionary<ulong, int>>();
+
         [Command("note")]
         [Description("Adds a note.")]
         public async Task CreateNote(CommandContext ctx, string idOrName, string noteContent)
@@ -44,7 +46,12 @@ namespace NoteMeSenpai.Commands
 
             if (Permissions.CheckCommandPermission(ctx))
             {
-                if (DiscordBot.AddNote(idOrName, noteContent, ctx))
+                if (noteContent.Length > 1500)
+                {
+                    await DiscordBot.RespondAsync(ctx, mention + ", maximum note length is 1500 characters");
+                    
+                }
+                else if (DiscordBot.AddNote(idOrName, noteContent, ctx))
                 {
                     await DiscordBot.RespondAsync(ctx, mention + ", note for **" + idOrName + "** added.");
                 }
@@ -86,9 +93,61 @@ namespace NoteMeSenpai.Commands
             var mention = ctx.Member.Mention;
             if (Permissions.CheckCommandPermission(ctx))
             {
-                if (!DiscordBot.GetAllNotes(ctx))
+                if (!DiscordBot.GetAllNotes(ctx, 1, 25))
                 {
                     await DiscordBot.RespondAsync(ctx, mention + ", that didn't work.");
+                }
+                else
+                {
+                    if(!_pagingCache.ContainsKey(ctx.Guild.ToString()))
+                    {
+                        _pagingCache.Add(ctx.Guild.ToString(), new Dictionary<ulong, int>());
+                    }
+
+                    var guildPagingCache = _pagingCache[ctx.Guild.ToString()];
+
+                    if (!guildPagingCache.ContainsKey(ctx.Member.Id))
+                    {
+                        guildPagingCache.Add(ctx.Member.Id, 25);
+                    }
+                }
+            }
+            else
+            {
+                await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
+            }
+        }
+
+        [Command("next")]
+        [Description("Displays literally all notes (25 per page)")]
+        public async Task GetNextPage(CommandContext ctx)
+        {
+            if (Permissions.CheckPrivate(ctx)) return;
+            var mention = ctx.Member.Mention;
+
+            if(!_pagingCache.ContainsKey(ctx.Guild.ToString()))
+            {
+                _pagingCache.Add(ctx.Guild.ToString(), new Dictionary<ulong, int>());
+            }
+
+            var guildPagingCache = _pagingCache[ctx.Guild.ToString()];
+
+            if (!guildPagingCache.ContainsKey(ctx.Member.Id))
+            {
+                guildPagingCache.Add(ctx.Member.Id, 0);
+            }
+
+            var currentStartNote = guildPagingCache[ctx.Member.Id];
+
+            if (Permissions.CheckCommandPermission(ctx))
+            {
+                if (!DiscordBot.GetAllNotes(ctx, currentStartNote, currentStartNote + 25))
+                {
+                    await DiscordBot.RespondAsync(ctx, mention + ", that didn't work.");
+                }
+                else
+                {
+                    guildPagingCache[ctx.Member.Id] = guildPagingCache[ctx.Member.Id] + 25;
                 }
             }
             else

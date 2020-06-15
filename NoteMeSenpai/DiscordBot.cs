@@ -18,7 +18,6 @@ namespace NoteMeSenpai
         private static DiscordClient _discord;
         private static CommandsNextExtension _commands;
         private static DatabaseConnection _databaseConnection;
-
         private static Options _options;
 
 
@@ -70,6 +69,20 @@ namespace NoteMeSenpai
             {
                 var ctx = commandExecutionEventArgs.Context;
                 ctx.Message.DeleteAsync();
+                return null;
+            };
+
+            _discord.MessageCreated += (messageCreatedEventArgs) =>
+            {
+                var isThisBot = messageCreatedEventArgs.Author.Id == _discord.CurrentUser.Id;
+                if (isThisBot)
+                {
+                    new Task(() => {
+                        Task.Delay(_options.DeletionDelayInSeconds * 1000).GetAwaiter().GetResult();
+                        messageCreatedEventArgs.Message.DeleteAsync();
+                    }).Start();
+                }
+                
                 return null;
             };
 
@@ -187,13 +200,30 @@ namespace NoteMeSenpai
             }
         }
 
-        public static bool GetAllNotes(CommandContext ctx)
+        public static bool GetAllNotes(CommandContext ctx, int from, int to)
         {
             Expression<Func<Note, bool>> filter = note => note.Guild.Equals(ctx.Guild.ToString());
-            var notes = _databaseConnection.GetAll(filter);
-            foreach (var note in notes)
+            var notes = _databaseConnection.GetAll(filter).Where(x => x.NoteID >= from && x.NoteID < to).OrderBy(x => x.NoteID);
+            var message = "";
+
+            if (notes.Count() == 0)
             {
-                ctx.Member.SendMessageAsync(note.ToDiscordString()).GetAwaiter();
+                RespondAsync(ctx, ctx.Member.Mention + ", no more notes.").GetAwaiter();
+            }
+            else
+            {
+                foreach (var note in notes)
+                {
+                    if (message.Length + note.ToDiscordString().Length >= 2000)
+                    {
+                        RespondAsync(ctx, message).GetAwaiter();
+                        message = "";
+                    }
+                    message += note.ToDiscordString();
+
+                }
+                message += ctx.Member.Mention + ", use *-next* to show the next 25 notes";
+                RespondAsync(ctx, message).GetAwaiter();
             }
             return true;
         }
@@ -246,6 +276,29 @@ namespace NoteMeSenpai
             {
                 return false;            
             }
+        }
+
+        internal static bool PurgeAllMessages(CommandContext ctx)
+        {
+            try
+            {
+                foreach (var channel in ctx.Guild.Channels.Values.Where(x => x.Type == ChannelType.Text))
+                {
+                    foreach (var message in channel.GetMessagesBeforeAsync(channel.LastMessageId).GetAwaiter().GetResult())
+                    {
+                        if (message.Author.Id == _discord.CurrentUser.Id)
+                        {
+                            message.DeleteAsync();   
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
+            
         }
 
         /// <summary>

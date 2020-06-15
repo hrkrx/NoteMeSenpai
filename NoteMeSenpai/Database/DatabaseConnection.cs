@@ -46,7 +46,7 @@ namespace NoteMeSenpai.Database
                     update.Set(property.Name, property.GetValue(obj));
                 }
             }
-            collection.UpdateOne(filter, update);  
+            collection.UpdateOne(filter, update);
         }
 
         public T Get<T>(Expression<Func<T, bool>> filter) where T : IDatabaseObject

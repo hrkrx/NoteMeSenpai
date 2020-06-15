@@ -7,6 +7,7 @@ namespace NoteMeSenpai.Models
 {
     public class Options {
         public string DatabaseConnectionString { get; set; }
+        public int DeletionDelayInSeconds { get; set; }
         
         public static Options LoadFromFile(string path = null)
         {

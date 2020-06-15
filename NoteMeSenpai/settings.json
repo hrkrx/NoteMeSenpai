@@ -1,3 +1,4 @@
 {
-    "DatabaseConnectionString":""
+    "DatabaseConnectionString":"",
+    "DeletionDelayInSeconds": 60
 }

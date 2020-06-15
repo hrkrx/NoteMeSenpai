@@ -210,5 +210,24 @@ namespace NoteMeSenpai.Commands
                 await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
             }
         }
+
+        [Command("purge")]
+        [Description("Removes all messages send by the bot")]
+        public async Task PurgeAllMessages(CommandContext ctx)
+        {
+            if (Permissions.CheckPrivate(ctx)) return;
+            var mention = ctx.Member.Mention;
+            if (Permissions.CheckCommandPermission(ctx))
+            {
+                if (!DiscordBot.PurgeAllMessages(ctx))
+                {
+                    await DiscordBot.RespondAsync(ctx, mention + ", that didn't work.");
+                }
+            }
+            else
+            {
+                await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
+            }
+        }
     }
 }
