@@ -19,6 +19,15 @@ namespace NoteMeSenpai.Util
             _databaseConnection = dbConn;
         }
 
+        public static bool CheckPrivate(CommandContext context)
+        {
+            if (context.Guild == null)
+            {
+                context.RespondAsync("You seem to like this Bot, but it can't like you back as you'd love to. So the developer put this message here to save you from suffering.");
+                return true;
+            }
+            return false;
+        }
         public static bool CheckCommandPermission(CommandContext context)
         {
             if (_databaseConnection == null)
@@ -35,8 +44,8 @@ namespace NoteMeSenpai.Util
             Expression<Func<Permission, bool>> filter = (permission) => permission.Guild.Equals(context.Guild.ToString());
             var permissions = _databaseConnection.GetAll<Permission>(filter);
             var notYetRegulated = permissions.Where(x => x.Command.Equals(context.Command.Name) || x.Command.Equals("*")).Count() == 0;
-            var specificallyAllowed = permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName)  && context.Command.Name.Equals(x.Command));
-            var admin = permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName)  && context.Command.Name.Equals(x.Command)&& (context.Command.Name.Equals(x.Command) || x.Command.Equals("*")));
+            var specificallyAllowed = permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName) && context.Command.Name.Equals(x.Command));
+            var admin = permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName) && context.Command.Name.Equals(x.Command) && (context.Command.Name.Equals(x.Command) || x.Command.Equals("*")));
 
             if (notYetRegulated || specificallyAllowed != null || admin != null)
             {
