@@ -347,6 +347,7 @@ namespace NoteMeSenpai
         /// <returns></returns>
         internal static bool SetPrefixes(CommandContext ctx, string[] prefixes)
         {
+            ctx.Message.DeleteAsync().GetAwaiter().GetResult();
             _discord.DisconnectAsync().GetAwaiter().GetResult();
             _discord.Dispose();
             Task.Delay(1000).GetAwaiter();
