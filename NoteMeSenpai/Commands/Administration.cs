@@ -229,5 +229,72 @@ namespace NoteMeSenpai.Commands
                 await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
             }
         }
+
+        [Command("setprefix")]
+        [Description("Changes the prefix (one or more allowed)")]
+        public async Task SetPrefix(CommandContext ctx, params string[] prefixes)
+        {
+            if (Permissions.CheckPrivate(ctx)) return;
+            var mention = ctx.Member.Mention;
+            if (Permissions.CheckCommandPermission(ctx))
+            {
+                if (!DiscordBot.SetPrefixes(ctx, prefixes))
+                {
+                    await DiscordBot.RespondAsync(ctx, mention + ", that didn't work.");
+                }
+                else
+                {
+                    await DiscordBot.RespondAsync(ctx, mention + ", prefixes changed to: " + string.Join(", ", DiscordBot.GetPrefixes().Select(x => "\"" + x + "\"")));
+                }
+            }
+            else
+            {
+                await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
+            }
+        }
+
+        [Command("setdeletiondelay")]
+        [Description("Changes delay in seconds before a message from the bot is removed")]
+        public async Task SetDeletionDelay(CommandContext ctx, int delay)
+        {
+            if (Permissions.CheckPrivate(ctx)) return;
+            var mention = ctx.Member.Mention;
+            if (Permissions.CheckCommandPermission(ctx))
+            {
+                if (!DiscordBot.SetDeletionDelay(ctx, delay))
+                {
+                    await DiscordBot.RespondAsync(ctx, mention + ", that didn't work.");
+                }
+                else
+                {
+                    var newDelay = DiscordBot.GetOptions().DeletionDelayInSeconds;
+                    await DiscordBot.RespondAsync(ctx, mention + ", deletion delay set to " + newDelay);
+                }
+            }
+            else
+            {
+                await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
+            }
+        }
+
+        [Command("update")]
+        [Description("Updates the bot to the latest version available on github. only works if setup correctly (e.g. with the provided docker image)")]
+        public async Task Update(CommandContext ctx)
+        {
+            if (Permissions.CheckPrivate(ctx)) return;
+            var mention = ctx.Member.Mention;
+            if (Permissions.CheckCommandPermission(ctx))
+            {
+                var newDelay = DiscordBot.GetOptions().DeletionDelayInSeconds;
+                await DiscordBot.RespondAsync(ctx, mention + ", Bot is shutting down in " + newDelay + " seconds to update.");
+                await ctx.Message.DeleteAsync();
+                Task.Delay(newDelay * 1000 + 500).GetAwaiter().GetResult();
+                DiscordBot.Shutdown();
+            }
+            else
+            {
+                await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
+            }
+        }
     }
 }

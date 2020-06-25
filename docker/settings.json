@@ -1,3 +1,5 @@
 {
-    "DatabaseConnectionString":""
+    "DatabaseConnectionString":"",
+    "DeletionDelayInSeconds": 60,
+    "Prefixes":["-", "."]
 }

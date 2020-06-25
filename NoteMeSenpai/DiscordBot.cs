@@ -10,6 +10,7 @@ using DSharpPlus.CommandsNext;
 using System.Collections.Generic;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using System.Reflection;
 
 namespace NoteMeSenpai
 {
@@ -18,6 +19,7 @@ namespace NoteMeSenpai
         private static DiscordClient _discord;
         private static CommandsNextExtension _commands;
         private static DatabaseConnection _databaseConnection;
+        private static CommandsNextConfiguration _config;
         private static Options _options;
 
 
@@ -26,19 +28,24 @@ namespace NoteMeSenpai
         /// </summary>
         /// <param name="apiSecret">The discord bot API secret</param>
         /// <param name="prefixes">All prefixes the bot should react to</param>
-        public static async Task Start(string apiSecret, List<string> prefixes)
+        public static async Task Start(string apiSecret, bool waitInfinitely = true)
         {
-            Init(apiSecret, prefixes);
+            Init(apiSecret);
             await _discord.ConnectAsync();
-            await Task.Delay(-1);
+            if (waitInfinitely)
+            {
+                await Task.Delay(-1);
+            }
         }
+
+        internal static Options GetOptions() => _options;
 
         /// <summary>
         /// Inits all commands and events the bot has to 
         /// </summary>
         /// <param name="apiSecret">The discord bot API secret</param>
         /// <param name="prefixes">All prefixes the bot should react to</param>
-        private static void Init(string apiSecret, List<string> prefixes)
+        private static void Init(string apiSecret)
         {
             // Reading the Options
             _options = Options.LoadFromFile();
@@ -60,9 +67,9 @@ namespace NoteMeSenpai
             });
 
             
-            var commandConfig = new CommandsNextConfiguration();
-            commandConfig.StringPrefixes = prefixes;
-            _commands = _discord.UseCommandsNext(commandConfig);
+            _config = new CommandsNextConfiguration();
+            _config.StringPrefixes = _options.Prefixes;
+            _commands = _discord.UseCommandsNext(_config);
 
             // Hooks
             _commands.CommandExecuted += (commandExecutionEventArgs) =>
@@ -92,7 +99,12 @@ namespace NoteMeSenpai
             
         }
 
-
+        /// <summary>
+        /// Get all notes on a single User
+        /// </summary>
+        /// <param name="idOrName">The id or the full name</param>
+        /// <param name="ctx">Command context</param>
+        /// <returns></returns>
         public static bool GetNotes(string idOrName, CommandContext ctx)
         {
             var userById = ctx.Guild.Members.FirstOrDefault(x => x.Value.Id.ToString().Equals(idOrName)).Value;
@@ -144,6 +156,13 @@ namespace NoteMeSenpai
             }
         }
 
+        /// <summary>
+        /// Adds a new note on a User
+        /// </summary>
+        /// <param name="idOrName">Id or name</param>
+        /// <param name="noteContent">The note</param>
+        /// <param name="ctx">Command context</param>
+        /// <returns></returns>
         public static bool AddNote(string idOrName, string noteContent, CommandContext ctx)
         {
             var userById = ctx.Guild.Members.FirstOrDefault(x => x.Value.Id.ToString().Equals(idOrName)).Value;
@@ -184,6 +203,12 @@ namespace NoteMeSenpai
             }
         }
 
+        /// <summary>
+        /// Deletes a note by it's ID
+        /// </summary>
+        /// <param name="noteId">note Id</param>
+        /// <param name="ctx">Command context</param>
+        /// <returns></returns>
         public static bool DeleteNote(string noteId, CommandContext ctx)
         {
             try
@@ -200,6 +225,13 @@ namespace NoteMeSenpai
             }
         }
 
+        /// <summary>
+        /// Gets all notes (paginated)
+        /// </summary>
+        /// <param name="ctx">Command context</param>
+        /// <param name="from">start id</param>
+        /// <param name="to">end id</param>
+        /// <returns></returns>
         public static bool GetAllNotes(CommandContext ctx, int from, int to)
         {
             Expression<Func<Note, bool>> filter = note => note.Guild.Equals(ctx.Guild.ToString());
@@ -228,6 +260,12 @@ namespace NoteMeSenpai
             return true;
         }
 
+        /// <summary>
+        /// Deletes all notes on a specific user
+        /// </summary>
+        /// <param name="idOrName">Id or Name</param>
+        /// <param name="ctx">Command context</param>
+        /// <returns></returns>
         public static bool DeleteAllNotes(string idOrName, CommandContext ctx)
         {
             try
@@ -278,6 +316,57 @@ namespace NoteMeSenpai
             }
         }
 
+        /// <summary>
+        /// Sets the deletion delay in seconds before a message is deleted
+        /// </summary>
+        /// <param name="ctx">Command context</param>
+        /// <param name="delay">Delay in seconds</param>
+        /// <returns></returns>
+        internal static bool SetDeletionDelay(CommandContext ctx, int delay)
+        {
+            _options.DeletionDelayInSeconds = delay;
+            Options.SaveToFile(_options, "settings.json");
+            return true;
+        }
+
+        /// <summary>
+        /// Returns the current prefixes
+        /// </summary>
+        /// <returns>string array</returns>
+        public static string[] GetPrefixes()
+        {
+            var property = typeof(CommandsNextConfiguration).GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).FirstOrDefault(x => x.Name.Equals("StringPrefixes"));
+            return ((IEnumerable<string>)property.GetValue(_config)).ToArray();
+        }
+
+        /// <summary>
+        /// Sets the Prefixes and restarts the Bot
+        /// </summary>
+        /// <param name="ctx">Command context</param>
+        /// <param name="prefixes">all useable prefixes</param>
+        /// <returns></returns>
+        internal static bool SetPrefixes(CommandContext ctx, string[] prefixes)
+        {
+            _discord.DisconnectAsync().GetAwaiter().GetResult();
+            _discord.Dispose();
+            Task.Delay(1000).GetAwaiter();
+
+            _options.Prefixes = prefixes.ToList();
+            Options.SaveToFile(_options, "settings.json");
+
+            string apiKey = "<BOT-API-SECRET>";
+            if (File.Exists("api.key")) apiKey = File.ReadAllText("api.key");
+            DiscordBot.Start(apiKey, false).ConfigureAwait(false);
+
+            Task.Delay(1000).GetAwaiter();
+            return true;
+        }
+
+        /// <summary>
+        /// Removes all messages the bot has written from the server
+        /// </summary>
+        /// <param name="ctx">Command context</param>
+        /// <returns></returns>
         internal static bool PurgeAllMessages(CommandContext ctx)
         {
             try
@@ -350,6 +439,11 @@ namespace NoteMeSenpai
             return true;
         }
 
+        /// <summary>
+        /// Adds a Channel to the list of allowed response channels
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <returns></returns>
         public static bool AddChannel(DiscordChannel channel)
         {
             if (channel == null)
@@ -404,6 +498,11 @@ namespace NoteMeSenpai
             }
         }
 
+        /// <summary>
+        /// Sets the default channel for responding
+        /// </summary>
+        /// <param name="channel">Channel</param>
+        /// <returns></returns>
         public static bool SetDefaultChannel(DiscordChannel channel)
         {
             if (channel == null)
@@ -440,6 +539,11 @@ namespace NoteMeSenpai
             return true;
         }
 
+        /// <summary>
+        /// Removes a channel from the allowed channel list
+        /// </summary>
+        /// <param name="channel">Channel</param>
+        /// <returns></returns>
         public static bool RemoveChannel(DiscordChannel channel)
         {
             if (channel == null)
@@ -456,6 +560,16 @@ namespace NoteMeSenpai
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Shutdown bot and exit program
+        /// </summary>
+        public static void Shutdown()
+        {
+            _discord.DisconnectAsync().GetAwaiter().GetResult();
+            _discord.Dispose();
+            Environment.Exit(0);
         }
     }
 }

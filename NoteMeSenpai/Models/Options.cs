@@ -2,12 +2,14 @@ using System;
 using System.IO;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Collections.Generic;
 
 namespace NoteMeSenpai.Models
 {
     public class Options {
         public string DatabaseConnectionString { get; set; }
         public int DeletionDelayInSeconds { get; set; }
+        public List<string> Prefixes { get; set; }
         
         public static Options LoadFromFile(string path = null)
         {

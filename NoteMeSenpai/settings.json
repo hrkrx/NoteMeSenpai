@@ -1,4 +1,1 @@
-{
-    "DatabaseConnectionString":"",
-    "DeletionDelayInSeconds": 60
-}
+{"DatabaseConnectionString":"mongodb://localhost:27017","DeletionDelayInSeconds":90,"Prefixes":["-","."]}
