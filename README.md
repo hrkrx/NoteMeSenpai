@@ -5,10 +5,10 @@ You have two options to run this bot:
 - Docker (recommended)
 
 ## General requirements
+Checkout this git with its submodules with `git clone --recurse-submodules git@github.com:hrkrx/NoteMeSenpai.git`
+
 Create a Discord Application and add a Bot to it.  
 Create an api.key file in the `NoteMeSenpai` folder and put your API secret in it.
-
-Checkout this git with its submodules with `git clone --recurse-submodules git@github.com:hrkrx/NoteMeSenpai.git`
 
 ## Docker
 Have docker installed on the host (https://www.docker.com/get-started)
