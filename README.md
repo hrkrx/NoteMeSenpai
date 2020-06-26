@@ -24,7 +24,7 @@ The bot should now listen to your commands.
 
 To invite the Bot to a server look here (https://discordpy.readthedocs.io/en/latest/discord.html)
 
-## The manual way
+### The manual way
 
 Have mongodb installed on the host (localhost only, no auth).
 
@@ -36,34 +36,48 @@ Run the bot with your script.
 
 Save notes on users “-note {ID/uniqueName} {Note}”
 Response Example: 
+```
 Note on {ID/uniqueName} saved
+```
 
 Show notes on a certain users “-notes {ID}”
+
 Response Example: 
+```
 Note #XY by {noteCreator} on {DateTime}:
 {SomeNote}
+
 Note #XY+1 by {noteCreator} on {DateTime}:
 {SomeNote}
 …
+```
 
 Show all notes “-noteall”
+
 Response Example:
+```
 Note #1 by {noteCreator} on {DateTime} for {user}:
 {SomeNote}
+
 Note #2 by {noteCreator} on {DateTime} for {user}:
 {SomeNote}
 …
-
+```
 Delete a specific note “-delnote {ID/uniqueName} {NoteID}”
+
 Response Example:
+```
 Note #XY by {noteCreator} on {DateTime}:
 {SomeNote}
 DELETED
+```
 
 Delete all notes for user “-deleteallnotes {ID/uniqueName}”
-Requires special Role
+
 Response Example:
+```
 {NumberOfNotes} Notes on {ID/uniqueName} DELETED
+```
 
 # Administrative commands
 
