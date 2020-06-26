@@ -1,6 +1,3 @@
-# Note Me Senpai
-a simple note taking discord bot
-
 # How to run
 
 You have two options to run this bot:
@@ -34,13 +31,13 @@ Run the bot with your script.
 
 # Bot usage
 
-Save notes on users “-note {ID/uniqueName} {Note}”
+Save notes on users "-note {ID/uniqueName} {Note}"
 Response Example: 
 ```
 Note on {ID/uniqueName} saved
 ```
 
-Show notes on a certain users “-notes {ID}”
+Show notes on a certain users "-notes {ID}"
 
 Response Example: 
 ```
@@ -52,7 +49,7 @@ Note #XY+1 by {noteCreator} on {DateTime}:
 …
 ```
 
-Show all notes “-noteall”
+Show all notes "-noteall"
 
 Response Example:
 ```
@@ -63,7 +60,7 @@ Note #2 by {noteCreator} on {DateTime} for {user}:
 {SomeNote}
 …
 ```
-Delete a specific note “-delnote {ID/uniqueName} {NoteID}”
+Delete a specific note "-delnote {ID/uniqueName} {NoteID}"
 
 Response Example:
 ```
@@ -72,7 +69,7 @@ Note #XY by {noteCreator} on {DateTime}:
 DELETED
 ```
 
-Delete all notes for user “-deleteallnotes {ID/uniqueName}”
+Delete all notes for user "-deleteallnotes {ID/uniqueName}"
 
 Response Example:
 ```
@@ -81,4 +78,84 @@ Response Example:
 
 # Administrative commands
 
-addrole, removerole, addchannel, setdefaultchannel, removechannel, showconfig, version, update, purge
+Add a role with a command to the permission system "-addrole {RoleName} {OneOrMoreCommands}"
+
+Response Example:
+```
+role {RoleName} added for {OneOrMoreCommands}
+```
+When {OneOrMoreCommands} is empty it adds the role to all commands.
+
+
+Remove a command for a role from the permission system "-removerole {RoleName} {OneCommand}"
+
+Response Example:
+```
+role {RoleName} removed for {OneCommand}
+```
+When {OneCommand} is empty it removes the role from all commands.
+
+Add a channel to the valid response channels "-addchannel {ChannelName}"
+
+Response Example:
+```
+channel {ChannelName} added as valid response channel
+```
+
+Remove a channel from the valid response channels "-removechannel {ChannelName}"
+
+Response Example:
+```
+channel {ChannelName} removed from valid response channel
+```
+
+Set a channel as the default response channel "-setdefaultchannel {ChannelName}" 
+
+Response Example:
+```
+channel {ChannelName} set as default response channel
+```
+
+Display the configuration "-showconfig"
+
+Response Example:
+```
+DatabaseConnection = mongodb://localhost:27017
+Prefixes = "-", "."
+DeletionDelay = 60
+Channels the bot is allowed to post in:
+
+Channel1
+Channel2 (default)
+Channel3
+
+Permissions:
+
+Admin:
+    -> *
+
+RestrictedUser:
+    -> note
+    -> notes
+    -> allnotes
+    -> next
+```
+Show the current version of the bot "-version"
+
+Response Example:
+```
+Version: 1.0.3.2
+```
+
+Update the bot to the latest version "-update" (only works if set up correctly or run with docker)
+
+Response Example:
+```
+Bot is shutting down in {X} seconds to update.
+```
+
+Delete all messages sent by the bot from the server "-purge" (no response)
+
+Set the prefix which the bot reacts to "-setprefix {OneOrMorePrefixes}" (no response)
+
+Set the delay before a message by the bot is deleted "-setdeletiondelay {TimeInSeconds}"
