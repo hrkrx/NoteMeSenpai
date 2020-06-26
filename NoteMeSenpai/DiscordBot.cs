@@ -254,7 +254,7 @@ namespace NoteMeSenpai
                     message += note.ToDiscordString();
 
                 }
-                message += ctx.Member.Mention + ", use *-next* to show the next 25 notes";
+                message += ctx.Member.Mention + ", use the *next* command to show the next 25 notes";
                 RespondAsync(ctx, message).GetAwaiter();
             }
             return true;
