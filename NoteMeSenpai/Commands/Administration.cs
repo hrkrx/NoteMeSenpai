@@ -46,15 +46,15 @@ namespace NoteMeSenpai.Commands
 
         [Command("addrole")]
         [Description("Adds a role to the group of privileged roles for a specific command only.")]
-        public async Task AddRole(CommandContext ctx, string role, params string[] command)
+        public async Task AddRole(CommandContext ctx, string role, params string[] commands)
         {
             if (Permissions.CheckPrivate(ctx)) return;
             var mention = ctx.Member.Mention;
             if (Permissions.CheckCommandPermission(ctx))
             {
-                if (DiscordBot.AddRole(role, command, ctx.Guild))
+                if (DiscordBot.AddRole(role, commands, ctx.Guild))
                 {
-                    await DiscordBot.RespondAsync(ctx, mention + ", role **" + role + "** added for *" + command + "*");
+                    await DiscordBot.RespondAsync(ctx, mention + ", role **" + role + "** added for *" + string.Join(", ", commands) + "*");
                 }
                 else
                 {
