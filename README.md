@@ -5,8 +5,8 @@ You have two options to run this bot:
 - Docker (recommended)
 
 ## General requirements
-Create a Discord Application and add a Bot to it.
-Create a api.key file in the `NoteMeSenpai` folder and put your API secret in it.
+Create a Discord Application and add a Bot to it.  
+Create an api.key file in the `NoteMeSenpai` folder and put your API secret in it.
 
 ## Docker
 Have docker installed on the host (https://www.docker.com/get-started)
