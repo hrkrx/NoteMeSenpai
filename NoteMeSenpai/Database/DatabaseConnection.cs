@@ -33,20 +33,27 @@ namespace NoteMeSenpai.Database
         {
             var collection = database.GetCollection<T>(typeof(T).FullName);
             var filter = Builders<T>.Filter.Eq("_id", obj._id); 
+            
+            // sanitycheck for the filter
+            var sanitycheck = collection.Find(filter).First();
+
             var properties = obj.GetType().GetProperties();
-            UpdateDefinition<T> update = null;
+            var updateNeeded = false;
             foreach (var property in properties)
             {
-                if (update == null)
+                if (!property.GetValue(obj).Equals(property.GetValue(sanitycheck)))
                 {
-                    update = Builders<T>.Update.Set(property.Name, property.GetValue(obj));
-                }
-                else
-                {
-                    update.Set(property.Name, property.GetValue(obj));
+                    updateNeeded = true;
                 }
             }
-            collection.UpdateOne(filter, update);
+            if (updateNeeded)
+            {
+                var options = new FindOneAndReplaceOptions<T>
+                {
+                    ReturnDocument = ReturnDocument.After
+                };
+                var result = collection.FindOneAndReplace(filter, obj,options);
+            }
         }
 
         public T Get<T>(Expression<Func<T, bool>> filter) where T : IDatabaseObject

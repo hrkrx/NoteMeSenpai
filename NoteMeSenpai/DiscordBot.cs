@@ -555,6 +555,12 @@ namespace NoteMeSenpai
             var validChannel = _databaseConnection.Get(filter);
             var defaultChannel = _databaseConnection.GetAll(defaultFilter);
 
+            foreach (var defChannel in defaultChannel)
+            {
+                defChannel.IsDefault = false;
+                _databaseConnection.Update(defChannel);
+            }
+
             if(validChannel == null)
             {
                 validChannel = new Channel();
@@ -570,11 +576,6 @@ namespace NoteMeSenpai
                 _databaseConnection.Update(validChannel);
             }
 
-            foreach (var defChannel in defaultChannel)
-            {
-                defChannel.IsDefault = false;
-                _databaseConnection.Update(defChannel);
-            }
 
             return true;
         }
