@@ -296,5 +296,21 @@ namespace NoteMeSenpai.Commands
                 await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
             }
         }
+
+        [Command("version")]
+        [Description("gets the assembly version")]
+        public async Task GetVersion(CommandContext ctx)
+        {
+            if (Permissions.CheckPrivate(ctx)) return;
+            var mention = ctx.Member.Mention;
+            if (Permissions.CheckCommandPermission(ctx))
+            {
+                await DiscordBot.RespondAsync(ctx, mention + ", Version: " + typeof(Program).Assembly.GetName().Version);
+            }
+            else
+            {
+                await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
+            }
+        }
     }
 }
