@@ -521,7 +521,7 @@ namespace NoteMeSenpai
 
                 var responseChannel = channels.Values.FirstOrDefault(x => defaultChannel.ChannelId.Equals(x.Id.ToString()));
 
-                await responseChannel.SendMessageAsync(mention + " you have requested a command from **" + context.Channel.Name + "**, to make it a valid response channel use *-addchannel " + context.Channel.Name + "*\n");
+                await responseChannel.SendMessageAsync(mention + " you have requested a command from **" + context.Channel.Name + "**, to make it a valid response channel use the command *addchannel " + context.Channel.Name + "*\n");
                 await responseChannel.SendMessageAsync(message);
             }
         }
