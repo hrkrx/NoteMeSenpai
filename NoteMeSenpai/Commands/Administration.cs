@@ -46,7 +46,7 @@ namespace NoteMeSenpai.Commands
 
         [Command("addrole")]
         [Description("Adds a role to the group of privileged roles for a specific command only.")]
-        public async Task AddRole(CommandContext ctx, string role, string command)
+        public async Task AddRole(CommandContext ctx, string role, params string[] command)
         {
             if (Permissions.CheckPrivate(ctx)) return;
             var mention = ctx.Member.Mention;

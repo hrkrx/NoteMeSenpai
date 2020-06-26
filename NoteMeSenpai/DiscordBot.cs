@@ -423,6 +423,24 @@ namespace NoteMeSenpai
         }
 
         /// <summary>
+        /// Adds a role that is allowed to execute commands. "*" for wildcard
+        /// </summary>
+        /// <param name="role">Name of the role</param>
+        /// <param name="commands">The commands</param>
+        /// <param name="guild">Guild object ToString()</param>
+        public static bool AddRole(string role, string[] commands, DiscordGuild guild)
+        {
+            foreach (var command in commands)
+            {
+                if (!AddRole(role, command, guild))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
         /// Removes a role from a command. "*" for wildcard
         /// </summary>
         /// <param name="role"></param>
