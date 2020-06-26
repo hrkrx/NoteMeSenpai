@@ -348,7 +348,7 @@ namespace NoteMeSenpai.Commands
                     foreach (var permissiongroup in grouping)
                     {
                         message += $"{permissiongroup.First().RoleName}:\n";
-                        message += $"\t -> {string.Join("\n", permissiongroup.Select(x => x.Command))}\n"; 
+                        message += $"{string.Join("\n", permissiongroup.Select(x => "\t-> " + x.Command))}\n"; 
                         message += $"\n";
                     }
                 }
