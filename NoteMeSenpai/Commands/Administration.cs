@@ -322,7 +322,7 @@ namespace NoteMeSenpai.Commands
             if (Permissions.CheckCommandPermission(ctx))
             {
                 var options = DiscordBot.GetOptions();
-                var message = $"Configuration for {ctx.Guild.Name}:\n";
+                var message = $"Configuration for *{ctx.Guild.Name}*:\n";
                 var channels = DiscordBot.GetChannels(ctx.Guild);
                 var permissions = Util.Permissions.GetPermissions(ctx.Guild);
 
@@ -347,7 +347,7 @@ namespace NoteMeSenpai.Commands
                     message += $"Permissions:\n\n";
                     foreach (var permissiongroup in grouping)
                     {
-                        message += $"*{permissiongroup.First().RoleName}*\n";
+                        message += $"{permissiongroup.First().RoleName}:\n";
                         message += $"\t -> {string.Join("\n", permissiongroup.Select(x => x.Command))}\n"; 
                         message += $"\n";
                     }

@@ -46,7 +46,7 @@ namespace NoteMeSenpai.Util
             
             var notYetRegulated = permissions.Where(x => x.Command.Equals(context.Command.Name) || x.Command.Equals("*")).Count() == 0;
             var specificallyAllowed = permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName) && context.Command.Name.Equals(x.Command));
-            var admin = permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName) && context.Command.Name.Equals(x.Command) && (context.Command.Name.Equals(x.Command) || x.Command.Equals("*")));
+            var admin = permissions.FirstOrDefault(x => (context.Member.Roles.Select(r => r.Name).Contains(x.RoleName) && context.Command.Name.Equals(x.Command)) || (context.Command.Name.Equals(x.Command) || x.Command.Equals("*")));
 
             if (notYetRegulated || specificallyAllowed != null || admin != null)
             {
