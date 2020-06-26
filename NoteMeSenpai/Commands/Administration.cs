@@ -357,6 +357,7 @@ namespace NoteMeSenpai.Commands
                     message += $"No permissions set.\n";
                 }
                 message += "```\n";
+                await DiscordBot.RespondAsync(ctx, mention + "\n" + message);
             }
             else
             {
