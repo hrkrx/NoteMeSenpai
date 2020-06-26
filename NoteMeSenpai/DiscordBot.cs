@@ -252,12 +252,11 @@ namespace NoteMeSenpai
                         message = "";
                     }
                     message += note.ToDiscordString();
-
                 }
 
-                if (notes.Count() == 25)
+                if (notes.Count() >= 24)
                 {
-                    message += ctx.Member.Mention + ", use the *next* command to show the next 25 notes";
+                    message += ctx.Member.Mention + ", use the *next* command to show the notes";
                 }
                 
                 RespondAsync(ctx, message).GetAwaiter();
