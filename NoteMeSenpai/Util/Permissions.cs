@@ -6,6 +6,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using NoteMeSenpai.Database;
+using System.Collections.Generic;
 
 namespace NoteMeSenpai.Util
 {
@@ -41,8 +42,8 @@ namespace NoteMeSenpai.Util
                 return true;
             }
 
-            Expression<Func<Permission, bool>> filter = (permission) => permission.Guild.Equals(context.Guild.ToString());
-            var permissions = _databaseConnection.GetAll<Permission>(filter);
+            var permissions = GetPermissions(context.Guild);
+            
             var notYetRegulated = permissions.Where(x => x.Command.Equals(context.Command.Name) || x.Command.Equals("*")).Count() == 0;
             var specificallyAllowed = permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName) && context.Command.Name.Equals(x.Command));
             var admin = permissions.FirstOrDefault(x => context.Member.Roles.Select(r => r.Name).Contains(x.RoleName) && context.Command.Name.Equals(x.Command) && (context.Command.Name.Equals(x.Command) || x.Command.Equals("*")));
@@ -52,6 +53,13 @@ namespace NoteMeSenpai.Util
                 return true;
             }
             return false;
+        }
+
+        public static IEnumerable<Permission> GetPermissions(DiscordGuild guild)
+        {
+            Expression<Func<Permission, bool>> filter = (permission) => permission.Guild.Equals(guild.ToString());
+            var permissions = _databaseConnection.GetAll<Permission>(filter);
+            return permissions;
         }
     }
 }

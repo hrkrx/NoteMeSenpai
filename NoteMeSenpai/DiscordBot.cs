@@ -477,13 +477,18 @@ namespace NoteMeSenpai
         /// <returns>DiscordClient</returns>
         public static DiscordClient GetDiscordClient() => _discord;
 
+        /// <summary>
+        /// Sends a message in the correct channel
+        /// </summary>
+        /// <param name="context">Message context</param>
+        /// <param name="message">The message</param>
+        /// <returns></returns>
         public static async Task RespondAsync(CommandContext context, string message)
         {
             var mention = context.Member.Mention;
             var channels = context.Guild.Channels;
-            
-            Expression<Func<Channel, bool>> filter = channel => channel.Guild.Equals(context.Guild.ToString());
-            var allowedChannels = _databaseConnection.GetAll(filter);
+
+            var allowedChannels = GetChannels(context.Guild);
             var responseInSameChannelAllowed = allowedChannels.FirstOrDefault(x => x.ChannelId.Equals(context.Channel.Id.ToString())) != null;
             if (responseInSameChannelAllowed || allowedChannels.Count() == 0)
             {
@@ -502,6 +507,18 @@ namespace NoteMeSenpai
                 await responseChannel.SendMessageAsync(mention + " you have requested a command from **" + context.Channel.Name + "**, to make it a valid response channel use *-addchannel " + context.Channel.Name + "*\n");
                 await responseChannel.SendMessageAsync(message);
             }
+        }
+
+        /// <summary>
+        /// Returns all allowed channels for a server 
+        /// </summary>
+        /// <param name="guild">The Server</param>
+        /// <returns></returns>
+        public static IEnumerable<Channel> GetChannels(DiscordGuild guild)
+        {
+            Expression<Func<Channel, bool>> filter = channel => channel.Guild.Equals(guild.ToString());
+            var allowedChannels = _databaseConnection.GetAll(filter);
+            return allowedChannels;
         }
 
         /// <summary>
@@ -560,9 +577,9 @@ namespace NoteMeSenpai
             Expression<Func<Channel, bool>> filter = c => c.Guild.Equals(channel.Guild.ToString()) && c.ChannelId.Equals(channel.Id.ToString());
             var toBePurged = _databaseConnection.GetAll(filter);
 
-            foreach (var permission in toBePurged)
+            foreach (var channelToPurge in toBePurged)
             {
-                _databaseConnection.Delete(permission);
+                _databaseConnection.Delete(channelToPurge);
             }
 
             return true;

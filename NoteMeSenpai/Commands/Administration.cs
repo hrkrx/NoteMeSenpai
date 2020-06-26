@@ -312,5 +312,56 @@ namespace NoteMeSenpai.Commands
                 await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
             }
         }
+
+        [Command("showconfig")]
+        [Description("Displays the entire configuration for this server")]
+        public async Task ShowConfig(CommandContext ctx)
+        {
+            if (Permissions.CheckPrivate(ctx)) return;
+            var mention = ctx.Member.Mention;
+            if (Permissions.CheckCommandPermission(ctx))
+            {
+                var options = DiscordBot.GetOptions();
+                var message = $"Configuration for {ctx.Guild.Name}:\n";
+                var channels = DiscordBot.GetChannels(ctx.Guild);
+                var permissions = Util.Permissions.GetPermissions(ctx.Guild);
+
+                message += "```\n";
+                message += $"DatabaseConnection = {options.DatabaseConnectionString}\n";
+                message += $"Prefixes = {string.Join(", ", options.Prefixes.Select(x => "\"" + x + "\""))}\n";
+                message += $"DeletionDelay = {options.DeletionDelayInSeconds}\n";
+                if (channels.Count() > 0)
+                {
+                    message += $"Channels the bot is allowed to post in:\n\n";
+                    message += $"{string.Join("\n", channels.Select(x => x.IsDefault ? x.ChannelName + " (default)" : x.ChannelName))}\n";
+                }
+                else
+                {
+                    message += $"No channelrestrictions set.\n";
+                }
+                message += $"\n";
+                
+                if (permissions.Count() > 0)
+                {
+                    var grouping = permissions.GroupBy(x => x.RoleName);
+                    message += $"Permissions:\n\n";
+                    foreach (var permissiongroup in grouping)
+                    {
+                        message += $"*{permissiongroup.First().RoleName}*\n";
+                        message += $"\t -> {string.Join("\n", permissiongroup.Select(x => x.Command))}\n"; 
+                        message += $"\n";
+                    }
+                }
+                else
+                {
+                    message += $"No permissions set.\n";
+                }
+                message += "```\n";
+            }
+            else
+            {
+                await DiscordBot.RespondAsync(ctx, mention + ", you do not have permission to do that.");
+            }
+        }
     }
 }
