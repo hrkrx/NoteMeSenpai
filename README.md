@@ -36,6 +36,8 @@ Response Example:
 ```
 Note on {ID/uniqueName} saved
 ```
+<br/>
+<br/>
 
 Show notes on a certain users "-notes {ID}"
 
@@ -48,6 +50,8 @@ Note #XY+1 by {noteCreator} on {DateTime}:
 {SomeNote}
 …
 ```
+<br/>
+<br/>
 
 Show all notes "-noteall"
 
@@ -60,6 +64,9 @@ Note #2 by {noteCreator} on {DateTime} for {user}:
 {SomeNote}
 …
 ```
+<br/>
+<br/>
+
 Delete a specific note "-delnote {ID/uniqueName} {NoteID}"
 
 Response Example:
@@ -68,6 +75,8 @@ Note #XY by {noteCreator} on {DateTime}:
 {SomeNote}
 DELETED
 ```
+<br/>
+<br/>
 
 Delete all notes for user "-deleteallnotes {ID/uniqueName}"
 
@@ -85,7 +94,8 @@ Response Example:
 role {RoleName} added for {OneOrMoreCommands}
 ```
 When {OneOrMoreCommands} is empty it adds the role to all commands.
-
+<br/>
+<br/>
 
 Remove a command for a role from the permission system "-removerole {RoleName} {OneCommand}"
 
@@ -93,6 +103,9 @@ Response Example:
 ```
 role {RoleName} removed for {OneCommand}
 ```
+<br/>
+<br/>
+
 When {OneCommand} is empty it removes the role from all commands.
 
 Add a channel to the valid response channels "-addchannel {ChannelName}"
@@ -101,6 +114,8 @@ Response Example:
 ```
 channel {ChannelName} added as valid response channel
 ```
+<br/>
+<br/>
 
 Remove a channel from the valid response channels "-removechannel {ChannelName}"
 
@@ -108,6 +123,8 @@ Response Example:
 ```
 channel {ChannelName} removed from valid response channel
 ```
+<br/>
+<br/>
 
 Set a channel as the default response channel "-setdefaultchannel {ChannelName}" 
 
@@ -115,6 +132,8 @@ Response Example:
 ```
 channel {ChannelName} set as default response channel
 ```
+<br/>
+<br/>
 
 Display the configuration "-showconfig"
 
@@ -140,12 +159,17 @@ RestrictedUser:
     -> allnotes
     -> next
 ```
+<br/>
+<br/>
+
 Show the current version of the bot "-version"
 
 Response Example:
 ```
 Version: 1.0.3.2
 ```
+<br/>
+<br/>
 
 Update the bot to the latest version "-update" (only works if set up correctly or run with docker)
 
@@ -153,6 +177,8 @@ Response Example:
 ```
 Bot is shutting down in {X} seconds to update.
 ```
+<br/>
+<br/>
 
 Delete all messages sent by the bot from the server "-purge" (no response)
 
