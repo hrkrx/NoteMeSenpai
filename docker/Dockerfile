@@ -21,6 +21,7 @@ RUN apt install mongodb-org -y
 RUN cp /usr/bin/mongod /etc/init.d/
 
 COPY entrypoint.sh /
+RUN sed -i.bak 's/\r$//' entrypoint.sh
 RUN chmod +x entrypoint.sh
 
 ENTRYPOINT [ "sh", "/entrypoint.sh" ]
