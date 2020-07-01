@@ -49,12 +49,16 @@ namespace NoteMeSenpai.Commands
         public async Task AddRole(CommandContext ctx, string role, params string[] commands)
         {
             if (Permissions.CheckPrivate(ctx)) return;
+            if (commands.Length == 0)
+            {
+                commands = new string[] {"*"};
+            }
             var mention = ctx.Member.Mention;
             if (Permissions.CheckCommandPermission(ctx))
             {
                 if (DiscordBot.AddRole(role, commands, ctx.Guild))
                 {
-                    await DiscordBot.RespondAsync(ctx, mention + ", role **" + role + "** added for *" + string.Join(", ", commands) + "*");
+                    await DiscordBot.RespondAsync(ctx, mention + ", role **" + role + "** added for * " + string.Join(", ", commands) + " *");
                 }
                 else
                 {
