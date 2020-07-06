@@ -168,7 +168,12 @@ namespace NoteMeSenpai
             var userById = ctx.Guild.Members.FirstOrDefault(x => x.Value.Id.ToString().Equals(idOrName)).Value;
             var multiplePossibleUser = ctx.Guild.Members.Values.Where(x => x.DisplayName.Equals(idOrName));
             Expression<Func<Note, bool>> filter = note => note.Guild.Equals(ctx.Guild.ToString());
-            var noteCount = _databaseConnection.GetAll(filter).Count() + 1;
+            var allNotes = _databaseConnection.GetAll(filter);
+            long noteCount = 1; 
+            if (allNotes.Count() > 0)
+            {
+                noteCount = allNotes.OrderBy(x => x.NoteID).First().NoteID + 1;
+            }
 
             if (userById != null)
             {
