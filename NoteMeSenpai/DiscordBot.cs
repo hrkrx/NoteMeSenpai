@@ -172,7 +172,7 @@ namespace NoteMeSenpai
             long noteCount = 1; 
             if (allNotes.Count() > 0)
             {
-                noteCount = allNotes.OrderBy(x => x.NoteID).First().NoteID + 1;
+                noteCount = allNotes.OrderByDescending(x => x.NoteID).First().NoteID + 1;
             }
 
             if (userById != null)
